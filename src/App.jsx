@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel']
 const HISTORY_STORAGE_KEY = 'family-meal-menu-history-v1'
@@ -131,7 +131,7 @@ const BREAKFAST_OPTIONS = [
 const DINNER_OPTIONS = [
   { id: 'beef-noodle-soup', label: 'Beef noodle soup', chinese: '牛肉面' },
   { id: 'soy-braised-pork-noodles', label: 'Soy-braised pork noodles', chinese: '卤肉面' },
-  { id: 'pan-fried-steamed-buns', label: 'Pan-fried steamed buns', chinese: '生煎包' },
+  { id: 'chao-man-tou', label: 'Chao man tou', chinese: '炒馒头' },
   { id: 'kimchi-fried-rice', label: 'Kimchi fried rice', chinese: '泡菜炒饭' },
   { id: 'sweet-fried-dough-pancake', label: 'Sweet fried dough pancake', chinese: '糖油饼' },
   { id: 'tomato-and-egg-noodles', label: 'Tomato and egg noodles', chinese: '番茄鸡蛋面' },
@@ -151,7 +151,7 @@ const DINNER_OPTIONS = [
   { id: 'meat-buns', label: 'Meat buns', chinese: '肉包子' },
   { id: 'dumplings', label: 'Dumplings', chinese: '饺子' },
   { id: 'steamed-buns', label: 'Steamed buns', chinese: '馒头' },
-  { id: 'tang-san-jiao', label: 'Tang san jiao', chinese: '汤三角' },
+  { id: 'tang-san-jiao', label: 'Tang san jiao', chinese: '糖三角' },
   { id: 'papaya-soup', label: 'Papaya soup', chinese: '木瓜汤' },
   { id: 'chicken-soup', label: 'Chicken soup', chinese: '鸡汤' },
   { id: 'wan-zi-tang', label: 'Wan zi tang', chinese: '丸子汤' },
@@ -361,6 +361,8 @@ function App() {
   const [selections, setSelections] = useState(createEmptySelections)
   const [orderHistory, setOrderHistory] = useState(loadOrderHistory)
   const [hasArchivedCurrentMenu, setHasArchivedCurrentMenu] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+  const toastTimerRef = useRef(null)
 
   const currentSelection = selections[currentMember]
   const currentIndex = FAMILY_MEMBERS.indexOf(currentMember)
@@ -516,6 +518,29 @@ function App() {
     return notes
   }
 
+  const scrollToTop = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
+  }
+
+  const showToast = (message) => {
+    setToastMessage(message)
+
+    if (toastTimerRef.current) {
+      window.clearTimeout(toastTimerRef.current)
+    }
+
+    toastTimerRef.current = window.setTimeout(() => {
+      setToastMessage('')
+      toastTimerRef.current = null
+    }, 2200)
+  }
+
   const resetAll = () => {
     setScreen('intro')
     setCurrentMember(FAMILY_MEMBERS[0])
@@ -613,14 +638,33 @@ function App() {
         archiveCurrentMenu()
       }
       setScreen('summary')
+      showToast('All family orders saved.')
+      scrollToTop()
       return
     }
 
-    setCurrentMember(findNextIncompleteMember(currentMember))
+    const nextMember = findNextIncompleteMember(currentMember)
+    setCurrentMember(nextMember)
+    showToast(`${currentMember} saved. Next up: ${nextMember}.`)
+    scrollToTop()
+  }
+
+  const viewOrderScreen = () => {
+    setScreen('summary')
+    showToast('Viewing current order.')
+    scrollToTop()
   }
 
   return (
     <div className="persona-shell">
+      {toastMessage && (
+        <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+          <div className="stage-enter border border-[#ffd2ea]/30 bg-[#ff2e97] px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_40px_rgba(255,46,151,0.35)]">
+            {toastMessage}
+          </div>
+        </div>
+      )}
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-20 top-14 h-44 w-44 rotate-12 rounded-[2.5rem] bg-[#ff4aa7]/20 blur-3xl" />
         <div className="absolute right-0 top-0 h-72 w-72 -translate-y-1/3 translate-x-1/4 rounded-full bg-[#ff8aca]/18 blur-3xl" />
@@ -659,12 +703,6 @@ function App() {
                 <h2 className="max-w-3xl font-display text-4xl uppercase leading-none tracking-[0.06em] text-white md:text-6xl">
                   Quick picks, flexible turn order, and a clean summary for Mom.
                 </h2>
-                <p className="mt-5 max-w-2xl text-base text-white/78 md:text-lg">
-                  Each family member can jump in at any time, lock in breakfast and
-                  dinner, and add toppings only when the chosen breakfast needs them.
-                  When all four people are complete, the app flips to a polished recap
-                  screen.
-                </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -684,10 +722,6 @@ function App() {
                 <button type="button" className="persona-button" onClick={startFlow}>
                   Start
                 </button>
-                <p className="max-w-md text-sm text-white/60">
-                  Built with React state only, so it is simple now and easy to expand
-                  later with more meals, toppings, or family members.
-                </p>
               </div>
             </div>
 
@@ -699,11 +733,6 @@ function App() {
                 <h2 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-white">
                   Breakfast + Dinner Picks
                 </h2>
-                <p className="mt-4 text-sm text-white/72 md:text-base">
-                  The menu now supports a larger bilingual list, direct sibling
-                  switching, and sub-options like toppings only when they are actually
-                  relevant.
-                </p>
               </div>
 
               <div className="grid gap-3">
@@ -873,17 +902,26 @@ function App() {
                 </div>
 
                 <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={saveCurrentSelection}
-                    disabled={
-                      currentSelection.breakfast.length === 0 ||
-                      currentSelection.dinner.length === 0
-                    }
-                    className="persona-button w-full max-w-sm disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:scale-100"
-                  >
-                    {allComplete ? 'Finish Menu' : 'Save & Next'}
-                  </button>
+                  <div className="flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={viewOrderScreen}
+                      className="persona-button w-full bg-[#2d1621] shadow-[0_16px_38px_rgba(0,0,0,0.35)] hover:bg-[#432131] sm:max-w-xs"
+                    >
+                      View Order
+                    </button>
+                    <button
+                      type="button"
+                      onClick={saveCurrentSelection}
+                      disabled={
+                        currentSelection.breakfast.length === 0 ||
+                        currentSelection.dinner.length === 0
+                      }
+                      className="persona-button w-full disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:scale-100 sm:max-w-xs"
+                    >
+                      {allComplete ? 'Finish Menu' : 'Save & Next'}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -965,6 +1003,14 @@ function App() {
                     value={formatOptionLabels(selectedDinners)}
                   />
                 </div>
+
+                <button
+                  type="button"
+                  onClick={viewOrderScreen}
+                  className="persona-button mt-6 w-full bg-[#2d1621] shadow-[0_16px_38px_rgba(0,0,0,0.35)] hover:bg-[#432131]"
+                >
+                  View Order
+                </button>
 
                 <button
                   type="button"
