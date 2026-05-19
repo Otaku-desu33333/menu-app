@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel', 'Frank', 'Sally']
 const HISTORY_STORAGE_KEY = 'family-meal-menu-history-v1'
@@ -327,6 +327,7 @@ function App() {
   const [selections, setSelections] = useState(createEmptySelections)
   const [orderHistory, setOrderHistory] = useState(loadOrderHistory)
   const [hasArchivedCurrentMenu, setHasArchivedCurrentMenu] = useState(false)
+  const dingAudioRef = useRef(null)
 
   const currentSelection = selections[currentMember]
   const currentIndex = FAMILY_MEMBERS.indexOf(currentMember)
@@ -433,48 +434,12 @@ function App() {
   }
 
   const playDing = () => {
-    if (typeof window === 'undefined') {
+    if (!dingAudioRef.current) {
       return
     }
 
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext
-
-    if (!AudioContextClass) {
-      return
-    }
-
-    const audioContext = new AudioContextClass()
-    const masterGain = audioContext.createGain()
-    const now = audioContext.currentTime
-
-    masterGain.gain.setValueAtTime(0.0001, now)
-    masterGain.gain.exponentialRampToValueAtTime(0.08, now + 0.012)
-    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7)
-    masterGain.connect(audioContext.destination)
-
-    const toneOne = audioContext.createOscillator()
-    const toneTwo = audioContext.createOscillator()
-
-    toneOne.type = 'sine'
-    toneTwo.type = 'triangle'
-
-    toneOne.frequency.setValueAtTime(1318.5, now)
-    toneOne.frequency.exponentialRampToValueAtTime(1567.98, now + 0.18)
-
-    toneTwo.frequency.setValueAtTime(1760, now + 0.06)
-    toneTwo.frequency.exponentialRampToValueAtTime(2093, now + 0.24)
-
-    toneOne.connect(masterGain)
-    toneTwo.connect(masterGain)
-
-    toneOne.start(now)
-    toneTwo.start(now + 0.045)
-    toneOne.stop(now + 0.34)
-    toneTwo.stop(now + 0.4)
-
-    toneTwo.onended = () => {
-      audioContext.close().catch(() => {})
-    }
+    dingAudioRef.current.currentTime = 0
+    dingAudioRef.current.play().catch(() => {})
   }
 
   const scrollToTop = () => {
@@ -602,6 +567,8 @@ function App() {
 
   return (
     <div className="persona-shell">
+      <audio ref={dingAudioRef} src="/ding.wav" preload="auto" />
+
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-20 top-14 h-44 w-44 rotate-12 rounded-[2.5rem] bg-[#ff4aa7]/20 blur-3xl" />
         <div className="absolute right-0 top-0 h-72 w-72 -translate-y-1/3 translate-x-1/4 rounded-full bg-[#ff8aca]/18 blur-3xl" />
