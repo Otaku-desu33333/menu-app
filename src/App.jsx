@@ -116,18 +116,6 @@ const BREAKFAST_OPTIONS = [
     requiresToppings: false,
   },
   {
-    id: 'milk',
-    label: 'Milk',
-    chinese: '牛奶',
-    requiresToppings: false,
-  },
-  {
-    id: 'oj',
-    label: 'OJ',
-    chinese: '橙汁',
-    requiresToppings: false,
-  },
-  {
     id: 'porridge-with-pork-floss',
     label: 'Porridge with pork floss',
     chinese: '肉松粥',
@@ -169,12 +157,23 @@ const DINNER_OPTIONS = [
   { id: 'wan-zi-tang', label: 'Wan zi tang', chinese: '丸子汤' },
   { id: 'mac-and-cheese', label: 'Macaroni and cheese', chinese: '芝士通心粉' },
 ]
+const DRINK_OPTIONS = [
+  { id: 'milk', label: 'Milk', chinese: '牛奶' },
+  { id: 'oj', label: 'OJ', chinese: '橙汁' },
+  { id: 'green-tea', label: 'Green tea', chinese: '绿茶' },
+  { id: 'chocolate-milk', label: 'Chocolate milk', chinese: '巧克力牛奶' },
+  { id: 'coconut-water', label: 'Coconut water', chinese: '椰子水' },
+  { id: 'water', label: 'Water', chinese: '水' },
+]
 
 const BREAKFAST_LOOKUP = Object.fromEntries(
   BREAKFAST_OPTIONS.map((option) => [option.id, option]),
 )
 const DINNER_LOOKUP = Object.fromEntries(
   DINNER_OPTIONS.map((option) => [option.id, option]),
+)
+const DRINK_LOOKUP = Object.fromEntries(
+  DRINK_OPTIONS.map((option) => [option.id, option]),
 )
 const TOPPING_LOOKUP = Object.fromEntries(
   TOPPING_OPTIONS.map((option) => [option.id, option]),
@@ -187,6 +186,7 @@ const createEmptySelections = () =>
       {
         breakfast: [],
         dinner: [],
+        drinks: [],
         toppings: [],
       },
     ]),
@@ -207,6 +207,7 @@ const normalizeChoiceIds = (value) => {
 const normalizeMemberSelection = (selection) => ({
   breakfast: normalizeChoiceIds(selection?.breakfast),
   dinner: normalizeChoiceIds(selection?.dinner),
+  drinks: normalizeChoiceIds(selection?.drinks),
   toppings: Array.isArray(selection?.toppings) ? selection.toppings : [],
 })
 
@@ -380,6 +381,9 @@ function App() {
   const selectedDinners = currentSelection.dinner.map(
     (dinnerId) => DINNER_LOOKUP[dinnerId],
   )
+  const selectedDrinks = currentSelection.drinks.map(
+    (drinkId) => DRINK_LOOKUP[drinkId],
+  )
   const showToppings = selectedBreakfasts.some((breakfast) => breakfast?.requiresToppings)
   const recentHistory = orderHistory.slice(0, 6)
 
@@ -415,6 +419,7 @@ function App() {
     const hasProgress =
       selection.breakfast.length > 0 ||
       selection.dinner.length > 0 ||
+      selection.drinks.length > 0 ||
       selection.toppings.length > 0
 
     if (isCurrent) {
@@ -496,6 +501,18 @@ function App() {
       }
     })
 
+    currentMemberSelection.drinks.forEach((drinkId) => {
+      const drinkCount = orderHistory.filter((entry) =>
+        normalizeChoiceIds(entry.selections?.[member]?.drinks).includes(drinkId),
+      ).length
+
+      if (drinkCount >= 3) {
+        notes.push(
+          `${member} has picked ${DRINK_LOOKUP[drinkId]?.label} ${drinkCount} times in saved history.`,
+        )
+      }
+    })
+
     return notes
   }
 
@@ -514,8 +531,6 @@ function App() {
   }
 
   const handleBreakfastSelect = (breakfastId) => {
-    const selectedOption = BREAKFAST_LOOKUP[breakfastId]
-
     setSelections((currentSelections) => {
       const currentMemberSelection = currentSelections[currentMember]
       const isSelected = currentMemberSelection.breakfast.includes(breakfastId)
@@ -549,6 +564,23 @@ function App() {
           dinner: isSelected
             ? currentMemberSelection.dinner.filter((id) => id !== dinnerId)
             : [...currentMemberSelection.dinner, dinnerId],
+        },
+      }
+    })
+  }
+
+  const handleDrinkSelect = (drinkId) => {
+    setSelections((currentSelections) => {
+      const currentMemberSelection = currentSelections[currentMember]
+      const isSelected = currentMemberSelection.drinks.includes(drinkId)
+
+      return {
+        ...currentSelections,
+        [currentMember]: {
+          ...currentMemberSelection,
+          drinks: isSelected
+            ? currentMemberSelection.drinks.filter((id) => id !== drinkId)
+            : [...currentMemberSelection.drinks, drinkId],
         },
       }
     })
@@ -684,6 +716,10 @@ function App() {
                   <p>Full dinner options with bilingual naming.</p>
                 </div>
                 <div className="feature-card">
+                  <span className="feature-tag">Drinks</span>
+                  <p>A separate multi-select drink section for each person.</p>
+                </div>
+                <div className="feature-card">
                   <span className="feature-tag">Flow</span>
                   <p>Tap any sibling card on the right to edit them anytime.</p>
                 </div>
@@ -788,6 +824,32 @@ function App() {
                   <div className="mb-4 flex items-center justify-between gap-4">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
+                        Drinks
+                      </p>
+                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
+                        Choose Drinks
+                      </h3>
+                    </div>
+                    <p className="text-sm text-[#6d4558]">Tap one or more drinks.</p>
+                  </div>
+
+                  <div className="grid gap-3 xl:grid-cols-2">
+                    {DRINK_OPTIONS.map((option) => (
+                      <ChoiceCard
+                        key={option.id}
+                        title={option.label}
+                        description={option.chinese}
+                        selected={currentSelection.drinks.includes(option.id)}
+                        onClick={() => handleDrinkSelect(option.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="section-panel">
+                  <div className="mb-4 flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                         Dinner
                       </p>
                       <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
@@ -879,6 +941,10 @@ function App() {
                     }
                   />
                   <SummaryRow
+                    label="Drinks"
+                    value={formatOptionLabels(selectedDrinks)}
+                  />
+                  <SummaryRow
                     label="Dinner"
                     value={formatOptionLabels(selectedDinners)}
                   />
@@ -963,6 +1029,14 @@ function App() {
                       }
                     />
                     <SummaryRow
+                      label="Drinks"
+                      value={formatOptionLabels(
+                        normalizeChoiceIds(selection.drinks).map(
+                          (drinkId) => DRINK_LOOKUP[drinkId],
+                        ),
+                      )}
+                    />
+                    <SummaryRow
                       label="Dinner"
                       value={formatOptionLabels(
                         normalizeChoiceIds(selection.dinner).map(
@@ -1024,6 +1098,14 @@ function App() {
                                   {formatOptionLabels(
                                     normalizeChoiceIds(memberSelection?.breakfast).map(
                                       (breakfastId) => BREAKFAST_LOOKUP[breakfastId],
+                                    ),
+                                  )}
+                                </p>
+                                <p className="mt-1 text-sm text-[#5f3b4d]">
+                                  Drinks:{' '}
+                                  {formatOptionLabels(
+                                    normalizeChoiceIds(memberSelection?.drinks).map(
+                                      (drinkId) => DRINK_LOOKUP[drinkId],
                                     ),
                                   )}
                                 </p>
