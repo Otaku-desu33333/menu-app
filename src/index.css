@@ -20,8 +20,10 @@
   body {
     margin: 0;
     font-family: var(--font-body);
-    color: #2d1621;
-    background: #ffffff;
+    color: white;
+    background:
+      radial-gradient(circle at top, rgba(255, 92, 176, 0.32), transparent 34%),
+      linear-gradient(145deg, #12020f 0%, #22091e 52%, #070308 100%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -40,13 +42,24 @@ body::after {
 }
 
 body::before {
-  background: none;
-  opacity: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+  opacity: 0.35;
 }
 
 body::after {
-  background: none;
-  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 49.5%,
+    transparent 50.5%,
+    transparent 100%
+  );
+  background-size: 100% 7px;
+  opacity: 0.12;
 }
 
 @layer components {
@@ -55,7 +68,7 @@ body::after {
   }
 
   .persona-panel {
-    @apply relative overflow-hidden border border-[#f3cadb] bg-[rgba(255,255,255,0.88)] shadow-[0_20px_65px_rgba(216,108,157,0.18)] backdrop-blur-sm;
+    @apply relative overflow-hidden border border-white/12 bg-[#180715]/78 shadow-[0_22px_70px_rgba(0,0,0,0.35)] backdrop-blur-sm;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
   }
 
@@ -64,13 +77,13 @@ body::after {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.6), transparent 28%),
-      linear-gradient(340deg, rgba(255, 46, 151, 0.08), transparent 44%);
+      linear-gradient(135deg, rgba(255, 255, 255, 0.09), transparent 25%),
+      linear-gradient(340deg, rgba(255, 46, 151, 0.24), transparent 40%);
     pointer-events: none;
   }
 
   .persona-badge {
-    @apply flex min-w-44 flex-col items-start border border-[#f3cadb] bg-[rgba(255,255,255,0.85)] px-4 py-3 backdrop-blur-sm;
+    @apply flex min-w-44 flex-col items-start border border-[#ffd2ea]/25 bg-[#130610]/80 px-4 py-3 backdrop-blur-sm;
     clip-path: polygon(0 0, 100% 0, 100% 72%, 90% 100%, 0 100%);
   }
 
@@ -85,18 +98,18 @@ body::after {
   }
 
   .section-panel {
-    @apply border border-[#f4d2e0] bg-[#fff7fb] p-4 md:p-5;
+    @apply border border-white/10 bg-[#10040d]/60 p-4 md:p-5;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
   }
 
   .choice-card {
-    @apply flex min-h-32 w-full flex-col justify-between border border-[#f4d2e0] bg-white p-4 text-left transition duration-300;
+    @apply flex min-h-32 w-full flex-col justify-between border border-white/10 bg-[#260b1f]/88 p-4 text-left text-white transition duration-300;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
   }
 
   .choice-card:hover {
     transform: translateY(-3px);
-    border-color: rgba(255, 122, 191, 0.5);
+    border-color: rgba(255, 210, 234, 0.34);
   }
 
   .choice-card-selected {
@@ -105,26 +118,26 @@ body::after {
   }
 
   .choice-chip {
-    @apply min-h-14 border border-[#f4d2e0] bg-white px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-[#2d1621] transition duration-300;
+    @apply min-h-14 border border-white/10 bg-[#150611]/90 px-4 py-3 text-sm font-semibold uppercase tracking-[0.16em] text-white transition duration-300;
     clip-path: polygon(0 0, 100% 0, 100% 78%, 92% 100%, 0 100%);
   }
 
   .choice-chip:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 122, 191, 0.5);
+    border-color: rgba(255, 210, 234, 0.34);
   }
 
   .choice-chip-selected {
-    @apply border-[#ffd8ed]/45 bg-[#ff7abf] text-white shadow-[0_12px_28px_rgba(255,122,191,0.36)];
+    @apply border-[#ffd8ed]/45 bg-[#ff7abf] text-[#210312] shadow-[0_12px_28px_rgba(255,122,191,0.36)];
   }
 
   .intro-member-card {
-    @apply flex min-h-24 flex-col justify-between border border-[#f4d2e0] bg-white px-4 py-4;
+    @apply flex min-h-24 flex-col justify-between border border-white/10 bg-[#11040d]/80 px-4 py-4;
     clip-path: polygon(0 0, 100% 0, 100% 80%, 94% 100%, 0 100%);
   }
 
   .feature-card {
-    @apply border border-[#f4d2e0] bg-white px-4 py-4 text-sm text-[#5f3b4d];
+    @apply border border-white/10 bg-[#10040d]/70 px-4 py-4 text-sm text-white/78;
     clip-path: polygon(0 0, 100% 0, 100% 82%, 94% 100%, 0 100%);
   }
 
@@ -133,7 +146,7 @@ body::after {
   }
 
   .member-row {
-    @apply flex w-full items-center gap-3 border border-[#f4d2e0] bg-white px-4 py-3 text-left transition duration-300;
+    @apply flex w-full items-center gap-3 border border-white/10 bg-[#120610]/72 px-4 py-3 text-left text-white/74 transition duration-300;
     clip-path: polygon(0 0, 100% 0, 100% 82%, 95% 100%, 0 100%);
   }
 
@@ -142,11 +155,11 @@ body::after {
   }
 
   .member-row-complete {
-    @apply border-[#f0c4d9] bg-[#fff0f7];
+    @apply border-white/18 bg-[#22081c] text-white/92;
   }
 
   .summary-card {
-    @apply relative overflow-hidden border border-[#f3cadb] bg-[rgba(255,255,255,0.9)] px-5 py-6 shadow-[0_18px_50px_rgba(216,108,157,0.15)] backdrop-blur-sm md:px-6;
+    @apply relative overflow-hidden border border-white/12 bg-[#180715]/82 px-5 py-6 shadow-[0_18px_50px_rgba(0,0,0,0.3)] backdrop-blur-sm md:px-6;
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
   }
 
@@ -155,8 +168,8 @@ body::after {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(155deg, rgba(255, 255, 255, 0.7), transparent 24%),
-      linear-gradient(320deg, rgba(255, 46, 151, 0.08), transparent 38%);
+      linear-gradient(155deg, rgba(255, 255, 255, 0.08), transparent 22%),
+      linear-gradient(320deg, rgba(255, 46, 151, 0.22), transparent 36%);
     pointer-events: none;
   }
 

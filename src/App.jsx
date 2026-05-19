@@ -159,7 +159,7 @@ const DINNER_OPTIONS = [
 ]
 const DRINK_OPTIONS = [
   { id: 'milk', label: 'Milk', chinese: '牛奶' },
-  { id: 'oj', label: 'OJ', chinese: '橙汁' },
+  { id: 'oj', label: 'Orange juice', chinese: '橙汁' },
   { id: 'green-tea', label: 'Green tea', chinese: '绿茶' },
   { id: 'chocolate-milk', label: 'Chocolate milk', chinese: '巧克力牛奶' },
   { id: 'coconut-water', label: 'Coconut water', chinese: '椰子水' },
@@ -264,21 +264,21 @@ function ChoiceCard({ title, description, selected, onClick }) {
       <div>
         <span
           className={`text-[11px] font-semibold uppercase tracking-[0.35em] ${
-            selected ? 'text-white/70' : 'text-[#8f5c74]'
+            selected ? 'text-white/70' : 'text-white/55'
           }`}
         >
           Tap To Choose
         </span>
         <h3
           className={`mt-2 font-display text-xl uppercase tracking-[0.1em] md:text-2xl ${
-            selected ? 'text-white' : 'text-[#2d1621]'
+            selected ? 'text-white' : 'text-white'
           }`}
         >
           {title}
         </h3>
         <p
           className={`mt-1 text-sm font-medium md:text-base ${
-            selected ? 'text-white/90' : 'text-[#cc3e80]'
+            selected ? 'text-white/90' : 'text-white/72'
           }`}
         >
           {description}
@@ -286,7 +286,7 @@ function ChoiceCard({ title, description, selected, onClick }) {
       </div>
       <span
         className={`mt-4 text-xs font-semibold uppercase tracking-[0.25em] ${
-          selected ? 'text-white' : 'text-[#cc3e80]'
+          selected ? 'text-white' : 'text-[#ffd8ed]'
         }`}
       >
         {selected ? 'Selected' : 'Ready'}
@@ -310,11 +310,11 @@ function ToppingChip({ label, selected, onClick }) {
 
 function SummaryRow({ label, value }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-t border-[#f0d1de] py-3">
-      <span className="text-xs font-semibold uppercase tracking-[0.32em] text-[#8f5c74]">
+    <div className="flex items-center justify-between gap-4 border-t border-white/10 py-3">
+      <span className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">
         {label}
       </span>
-      <span className="text-right text-sm font-medium text-[#2d1621] md:text-base">
+      <span className="text-right text-sm font-medium text-white/90 md:text-base">
         {value}
       </span>
     </div>
@@ -326,10 +326,10 @@ function RepeatWatchCard({ member, notes }) {
     <article className="summary-card">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#8f5c74]">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">
             Repeat Watch
           </p>
-          <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-[#2d1621]">
+          <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-white">
             {member}
           </h3>
         </div>
@@ -341,13 +341,13 @@ function RepeatWatchCard({ member, notes }) {
       {notes.length > 0 ? (
         <div className="space-y-3">
           {notes.map((note) => (
-            <div key={note} className="rounded-none border border-[#f0d1de] bg-[#fff7fb] p-3 text-sm text-[#5f3b4d]">
+            <div key={note} className="rounded-none border border-white/10 bg-[#10040d]/70 p-3 text-sm text-white/74">
               {note}
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-sm text-[#5f3b4d]">
+        <p className="text-sm text-white/72">
           No strong repeats showing in the saved order history yet.
         </p>
       )}
@@ -634,16 +634,16 @@ function App() {
             <p className="text-xs font-semibold uppercase tracking-[0.45em] text-[#ffb7dd]">
               Morning Rotation
             </p>
-            <h1 className="font-display text-3xl uppercase tracking-[0.1em] text-[#2d1621] md:text-5xl">
+            <h1 className="font-display text-3xl uppercase tracking-[0.1em] text-white md:text-5xl">
               Family Meal Menu
             </h1>
-            <p className="mt-2 text-sm font-medium text-[#6d4558] md:text-base">{todayLabel}</p>
+            <p className="mt-2 text-sm font-medium text-white/60 md:text-base">{todayLabel}</p>
           </div>
           <div className="persona-badge">
-            <span className="text-xs uppercase tracking-[0.35em] text-[#8f5c74]">
+            <span className="text-xs uppercase tracking-[0.35em] text-white/55">
               Family Queue
             </span>
-            <span className="font-display text-xl uppercase tracking-[0.12em] text-[#2d1621]">
+            <span className="font-display text-xl uppercase tracking-[0.12em] text-white">
               {completedCount} / {FAMILY_MEMBERS.length}
             </span>
           </div>
@@ -656,10 +656,10 @@ function App() {
                 <p className="mb-3 inline-flex bg-[#ff2e97] px-3 py-1 text-xs font-bold uppercase tracking-[0.35em] text-white shadow-[6px_6px_0_rgba(0,0,0,0.25)]">
                   iPad Breakfast + Dinner Flow
                 </p>
-                <h2 className="max-w-3xl font-display text-4xl uppercase leading-none tracking-[0.06em] text-[#2d1621] md:text-6xl">
+                <h2 className="max-w-3xl font-display text-4xl uppercase leading-none tracking-[0.06em] text-white md:text-6xl">
                   Quick picks, flexible turn order, and a clean summary for Mom.
                 </h2>
-                <p className="mt-5 max-w-2xl text-base text-[#5f3b4d] md:text-lg">
+                <p className="mt-5 max-w-2xl text-base text-white/78 md:text-lg">
                   Each family member can jump in at any time, lock in breakfast and
                   dinner, and add toppings only when the chosen breakfast needs them.
                   When all four people are complete, the app flips to a polished recap
@@ -670,10 +670,10 @@ function App() {
               <div className="grid gap-3 sm:grid-cols-2">
                 {FAMILY_MEMBERS.map((member, index) => (
                   <div key={member} className="intro-member-card">
-                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-[#8f5c74]">
+                    <span className="text-xs font-semibold uppercase tracking-[0.3em] text-white/55">
                       Player {index + 1}
                     </span>
-                    <span className="font-display text-2xl uppercase tracking-[0.12em] text-[#2d1621]">
+                    <span className="font-display text-2xl uppercase tracking-[0.12em] text-white">
                       {member}
                     </span>
                   </div>
@@ -684,7 +684,7 @@ function App() {
                 <button type="button" className="persona-button" onClick={startFlow}>
                   Start
                 </button>
-                <p className="max-w-md text-sm text-[#6d4558]">
+                <p className="max-w-md text-sm text-white/60">
                   Built with React state only, so it is simple now and easy to expand
                   later with more meals, toppings, or family members.
                 </p>
@@ -696,10 +696,10 @@ function App() {
                 <p className="text-xs font-semibold uppercase tracking-[0.38em] text-[#ffb7dd]">
                   Today&apos;s Menu
                 </p>
-                <h2 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-[#2d1621]">
+                <h2 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-white">
                   Breakfast + Dinner Picks
                 </h2>
-                <p className="mt-4 text-sm text-[#5f3b4d] md:text-base">
+                <p className="mt-4 text-sm text-white/72 md:text-base">
                   The menu now supports a larger bilingual list, direct sibling
                   switching, and sub-options like toppings only when they are actually
                   relevant.
@@ -743,16 +743,16 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.38em] text-[#ffb7dd]">
                     {todayLabel}
                   </p>
-                  <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.1em] text-[#2d1621] md:text-5xl">
+                  <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.1em] text-white md:text-5xl">
                     {currentMember}
                   </h2>
                 </div>
                 <div className="w-full max-w-sm">
-                  <div className="mb-2 flex justify-between text-xs font-semibold uppercase tracking-[0.28em] text-[#8f5c74]">
+                  <div className="mb-2 flex justify-between text-xs font-semibold uppercase tracking-[0.28em] text-white/50">
                     <span>Progress</span>
                     <span>{completedCount} / 4 Saved</span>
                   </div>
-                  <div className="h-3 overflow-hidden bg-[#f5d9e6]">
+                  <div className="h-3 overflow-hidden bg-white/8">
                     <div
                       className="h-full bg-linear-to-r from-[#ff2e97] via-[#ff79c4] to-[#ffd6ec] transition-all duration-500"
                       style={{
@@ -770,11 +770,11 @@ function App() {
                       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                         Breakfast
                       </p>
-                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
+                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-white">
                         Choose A Main Item
                       </h3>
                     </div>
-                    <p className="text-sm text-[#6d4558]">Tap one or more cards to select.</p>
+                    <p className="text-sm text-white/60">Tap one or more cards to select.</p>
                   </div>
 
                   <div className="grid gap-3 xl:grid-cols-2">
@@ -790,18 +790,18 @@ function App() {
                   </div>
 
                   {showToppings && (
-                    <div className="mt-5 rounded-none border border-[#f0d1de] bg-white p-4 md:p-5">
+                    <div className="mt-5 rounded-none border border-white/10 bg-[#150611]/70 p-4 md:p-5">
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                             Toppings
                           </p>
-                          <p className="mt-1 text-sm text-[#6d4558]">
+                          <p className="mt-1 text-sm text-white/62">
                             This subcategory appears only for breakfasts that need extra
                             toppings.
                           </p>
                         </div>
-                        <span className="text-xs font-semibold uppercase tracking-[0.28em] text-[#8f5c74]">
+                        <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/50">
                           {currentSelection.toppings.length} Selected
                         </span>
                       </div>
@@ -826,11 +826,11 @@ function App() {
                       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                         Drinks
                       </p>
-                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
+                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-white">
                         Choose Drinks
                       </h3>
                     </div>
-                    <p className="text-sm text-[#6d4558]">Tap one or more drinks.</p>
+                    <p className="text-sm text-white/60">Tap one or more drinks.</p>
                   </div>
 
                   <div className="grid gap-3 xl:grid-cols-2">
@@ -852,11 +852,11 @@ function App() {
                       <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                         Dinner
                       </p>
-                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
+                      <h3 className="font-display text-2xl uppercase tracking-[0.1em] text-white">
                         Choose Dinner
                       </h3>
                     </div>
-                    <p className="text-sm text-[#6d4558]">Tap one or more dinner choices.</p>
+                    <p className="text-sm text-white/60">Tap one or more dinner choices.</p>
                   </div>
 
                   <div className="grid gap-3 xl:grid-cols-2">
@@ -871,6 +871,20 @@ function App() {
                     ))}
                   </div>
                 </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={saveCurrentSelection}
+                    disabled={
+                      currentSelection.breakfast.length === 0 ||
+                      currentSelection.dinner.length === 0
+                    }
+                    className="persona-button w-full max-w-sm disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0 disabled:hover:scale-100"
+                  >
+                    {allComplete ? 'Finish Menu' : 'Save & Next'}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -882,7 +896,9 @@ function App() {
                 <div className="mt-4 space-y-3">
                   {FAMILY_MEMBERS.map((member, index) => {
                     const isCurrent = index === currentIndex
-                    const isDone = selections[member].breakfast && selections[member].dinner
+                    const isDone =
+                      selections[member].breakfast.length > 0 &&
+                      selections[member].dinner.length > 0
 
                     return (
                       <button
@@ -895,21 +911,21 @@ function App() {
                       >
                         <span
                           className={`text-xs font-semibold uppercase tracking-[0.3em] ${
-                            isCurrent ? 'text-white/75' : 'text-[#8f5c74]'
+                            isCurrent ? 'text-white/75' : 'text-white/45'
                           }`}
                         >
                           {String(index + 1).padStart(2, '0')}
                         </span>
                         <span
                           className={`font-display text-xl uppercase tracking-[0.1em] ${
-                            isCurrent ? 'text-white' : 'text-[#2d1621]'
+                            isCurrent ? 'text-white' : 'text-white'
                           }`}
                         >
                           {member}
                         </span>
                         <span
                           className={`ml-auto text-xs font-semibold uppercase tracking-[0.28em] ${
-                            isCurrent ? 'text-white/75' : 'text-[#8f5c74]'
+                            isCurrent ? 'text-white/75' : 'text-white/55'
                           }`}
                         >
                           {getMemberStatus(member)}
@@ -924,7 +940,7 @@ function App() {
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#ffb7dd]">
                   Live Preview
                 </p>
-                <h3 className="mt-2 font-display text-2xl uppercase tracking-[0.1em] text-[#2d1621]">
+                <h3 className="mt-2 font-display text-2xl uppercase tracking-[0.1em] text-white">
                   {currentMember}
                 </h3>
                 <div className="mt-4">
@@ -974,11 +990,11 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#ffb7dd]">
                     Mom&apos;s View
                   </p>
-                  <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.1em] text-[#2d1621] md:text-5xl">
+                  <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.1em] text-white md:text-5xl">
                     Final Meal Summary
                   </h2>
-                  <p className="mt-2 text-sm font-medium text-[#6d4558] md:text-base">{todayLabel}</p>
-                  <p className="mt-3 max-w-2xl text-sm text-[#5f3b4d] md:text-base">
+                  <p className="mt-2 text-sm font-medium text-white/60 md:text-base">{todayLabel}</p>
+                  <p className="mt-3 max-w-2xl text-sm text-white/72 md:text-base">
                     Everyone has locked in breakfast and dinner. This is the clean
                     morning recap screen for the household.
                   </p>
@@ -998,10 +1014,10 @@ function App() {
                   <article key={member} className="summary-card stage-enter">
                     <div className="mb-5 flex items-start justify-between gap-4">
                       <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[#8f5c74]">
+                        <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">
                           Family Member {index + 1}
                         </p>
-                        <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-[#2d1621]">
+                        <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-white">
                           {member}
                         </h3>
                       </div>
@@ -1056,11 +1072,11 @@ function App() {
                     <p className="text-xs font-semibold uppercase tracking-[0.36em] text-[#ffb7dd]">
                       Past Orders
                     </p>
-                    <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-[#2d1621]">
+                    <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-white">
                       Recent Menu History
                     </h3>
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.28em] text-[#8f5c74]">
+                  <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/55">
                     Stored On This Browser
                   </span>
                 </div>
@@ -1070,13 +1086,13 @@ function App() {
                     {recentHistory.map((entry) => (
                       <article
                         key={entry.id}
-                        className="rounded-none border border-[#f0d1de] bg-[#fff7fb] p-4"
+                        className="rounded-none border border-white/10 bg-[#10040d]/70 p-4"
                       >
                         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                          <h4 className="font-display text-xl uppercase tracking-[0.1em] text-[#2d1621]">
+                          <h4 className="font-display text-xl uppercase tracking-[0.1em] text-white">
                             {entry.dateLabel}
                           </h4>
-                          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-[#8f5c74]">
+                          <span className="text-xs font-semibold uppercase tracking-[0.28em] text-white/55">
                             Saved Menu
                           </span>
                         </div>
@@ -1088,12 +1104,12 @@ function App() {
                             return (
                               <div
                                 key={`${entry.id}-${member}`}
-                                className="rounded-none border border-[#f0d1de] bg-white p-3"
+                                className="rounded-none border border-white/10 bg-[#180715]/82 p-3"
                               >
-                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#8f5c74]">
+                                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/45">
                                   {member}
                                 </p>
-                                <p className="mt-2 text-sm text-[#5f3b4d]">
+                                <p className="mt-2 text-sm text-white/74">
                                   Breakfast:{' '}
                                   {formatOptionLabels(
                                     normalizeChoiceIds(memberSelection?.breakfast).map(
@@ -1101,7 +1117,7 @@ function App() {
                                     ),
                                   )}
                                 </p>
-                                <p className="mt-1 text-sm text-[#5f3b4d]">
+                                <p className="mt-1 text-sm text-white/74">
                                   Drinks:{' '}
                                   {formatOptionLabels(
                                     normalizeChoiceIds(memberSelection?.drinks).map(
@@ -1109,7 +1125,7 @@ function App() {
                                     ),
                                   )}
                                 </p>
-                                <p className="mt-1 text-sm text-[#5f3b4d]">
+                                <p className="mt-1 text-sm text-white/74">
                                   Dinner:{' '}
                                   {formatOptionLabels(
                                     normalizeChoiceIds(memberSelection?.dinner).map(
@@ -1125,7 +1141,7 @@ function App() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#5f3b4d]">
+                  <p className="text-sm text-white/72">
                     No past menus yet. Once you finish a full family menu, it will be saved
                     here automatically.
                   </p>
