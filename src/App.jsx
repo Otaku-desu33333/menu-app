@@ -10,7 +10,7 @@ const TOPPING_OPTIONS = [
   { id: 'syrup', label: 'Syrup', chinese: '糖浆' },
   { id: 'strawberry', label: 'Strawberry', chinese: '草莓' },
   { id: 'blueberry', label: 'Blueberry', chinese: '蓝莓' },
-  { id: 'nutella', label: 'Nutella', chinese: '能多益榛子酱' },
+  { id: 'nutella', label: 'Nutella', chinese: '榛子巧克力酱' },
 ]
 const BREAKFAST_OPTIONS = [
   {
@@ -518,6 +518,43 @@ function App() {
     return notes
   }
 
+  const playDing = () => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+
+    if (!AudioContextClass) {
+      return
+    }
+
+    const audioContext = new AudioContextClass()
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(1046.5, audioContext.currentTime)
+    oscillator.frequency.exponentialRampToValueAtTime(
+      1318.5,
+      audioContext.currentTime + 0.14,
+    )
+
+    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime)
+    gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01)
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.32)
+
+    oscillator.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+
+    oscillator.start(audioContext.currentTime)
+    oscillator.stop(audioContext.currentTime + 0.34)
+
+    oscillator.onended = () => {
+      audioContext.close().catch(() => {})
+    }
+  }
+
   const scrollToTop = () => {
     if (typeof window === 'undefined') {
       return
@@ -638,6 +675,7 @@ function App() {
         archiveCurrentMenu()
       }
       setScreen('summary')
+      playDing()
       showToast('All family orders saved.')
       scrollToTop()
       return
@@ -645,6 +683,7 @@ function App() {
 
     const nextMember = findNextIncompleteMember(currentMember)
     setCurrentMember(nextMember)
+    playDing()
     showToast(`${currentMember} saved. Next up: ${nextMember}.`)
     scrollToTop()
   }
@@ -694,7 +733,7 @@ function App() {
         </header>
 
         {screen === 'intro' && (
-          <section className="stage-enter grid flex-1 gap-5 lg:grid-cols-[1.3fr_0.9fr]">
+          <section className="stage-enter flex flex-1">
             <div className="persona-panel flex flex-col justify-between gap-8 px-6 py-8 md:px-10 md:py-10">
               <div>
                 <p className="mb-3 inline-flex bg-[#ff2e97] px-3 py-1 text-xs font-bold uppercase tracking-[0.35em] text-white shadow-[6px_6px_0_rgba(0,0,0,0.25)]">
@@ -724,40 +763,6 @@ function App() {
                 </button>
               </div>
             </div>
-
-            <aside className="persona-panel stage-enter flex flex-col justify-between gap-6 px-6 py-8 md:px-8">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.38em] text-[#ffb7dd]">
-                  Today&apos;s Menu
-                </p>
-                <h2 className="mt-3 font-display text-3xl uppercase tracking-[0.1em] text-white">
-                  Breakfast + Dinner Picks
-                </h2>
-              </div>
-
-              <div className="grid gap-3">
-                <div className="feature-card">
-                  <span className="feature-tag">Breakfast</span>
-                  <p>Large mixed breakfast list with Chinese labels.</p>
-                </div>
-                <div className="feature-card">
-                  <span className="feature-tag">Dinner</span>
-                  <p>Full dinner options with bilingual naming.</p>
-                </div>
-                <div className="feature-card">
-                  <span className="feature-tag">Drinks</span>
-                  <p>A separate multi-select drink section for each person.</p>
-                </div>
-                <div className="feature-card">
-                  <span className="feature-tag">Flow</span>
-                  <p>Tap any sibling card on the right to edit them anytime.</p>
-                </div>
-                <div className="feature-card">
-                  <span className="feature-tag">History</span>
-                  <p>Past menus are saved on this device so repeats are easy to spot.</p>
-                </div>
-              </div>
-            </aside>
           </section>
         )}
 
