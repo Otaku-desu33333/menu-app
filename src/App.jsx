@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 
 const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel', 'Frank', 'Sally']
 const HISTORY_STORAGE_KEY = 'family-meal-menu-history-v1'
@@ -321,48 +321,12 @@ function SummaryRow({ label, value }) {
   )
 }
 
-function RepeatWatchCard({ member, notes }) {
-  return (
-    <article className="summary-card">
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">
-            Repeat Watch
-          </p>
-          <h3 className="font-display text-3xl uppercase tracking-[0.1em] text-white">
-            {member}
-          </h3>
-        </div>
-        <span className="inline-flex bg-[#2d1621] px-3 py-1 text-xs font-bold uppercase tracking-[0.28em] text-white">
-          {notes.length > 0 ? 'Check' : 'Balanced'}
-        </span>
-      </div>
-
-      {notes.length > 0 ? (
-        <div className="space-y-3">
-          {notes.map((note) => (
-            <div key={note} className="rounded-none border border-white/10 bg-[#10040d]/70 p-3 text-sm text-white/74">
-              {note}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm text-white/72">
-          No strong repeats showing in the saved order history yet.
-        </p>
-      )}
-    </article>
-  )
-}
-
 function App() {
   const [screen, setScreen] = useState('intro')
   const [currentMember, setCurrentMember] = useState(FAMILY_MEMBERS[0])
   const [selections, setSelections] = useState(createEmptySelections)
   const [orderHistory, setOrderHistory] = useState(loadOrderHistory)
   const [hasArchivedCurrentMenu, setHasArchivedCurrentMenu] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
-  const toastTimerRef = useRef(null)
 
   const currentSelection = selections[currentMember]
   const currentIndex = FAMILY_MEMBERS.indexOf(currentMember)
@@ -468,56 +432,6 @@ function App() {
     setHasArchivedCurrentMenu(true)
   }
 
-  const buildRepeatNotes = (member) => {
-    const currentMemberSelection = selections[member]
-
-    if (
-      currentMemberSelection.breakfast.length === 0 &&
-      currentMemberSelection.dinner.length === 0
-    ) {
-      return []
-    }
-    const notes = []
-
-    currentMemberSelection.breakfast.forEach((breakfastId) => {
-      const breakfastCount = orderHistory.filter((entry) =>
-        normalizeChoiceIds(entry.selections?.[member]?.breakfast).includes(breakfastId),
-      ).length
-
-      if (breakfastCount >= 3) {
-        notes.push(
-          `${member} has picked ${BREAKFAST_LOOKUP[breakfastId]?.label} ${breakfastCount} times in saved history.`,
-        )
-      }
-    })
-
-    currentMemberSelection.dinner.forEach((dinnerId) => {
-      const dinnerCount = orderHistory.filter((entry) =>
-        normalizeChoiceIds(entry.selections?.[member]?.dinner).includes(dinnerId),
-      ).length
-
-      if (dinnerCount >= 3) {
-        notes.push(
-          `${member} has picked ${DINNER_LOOKUP[dinnerId]?.label} ${dinnerCount} times in saved history.`,
-        )
-      }
-    })
-
-    currentMemberSelection.drinks.forEach((drinkId) => {
-      const drinkCount = orderHistory.filter((entry) =>
-        normalizeChoiceIds(entry.selections?.[member]?.drinks).includes(drinkId),
-      ).length
-
-      if (drinkCount >= 3) {
-        notes.push(
-          `${member} has picked ${DRINK_LOOKUP[drinkId]?.label} ${drinkCount} times in saved history.`,
-        )
-      }
-    })
-
-    return notes
-  }
-
   const playDing = () => {
     if (typeof window === 'undefined') {
       return
@@ -530,27 +444,35 @@ function App() {
     }
 
     const audioContext = new AudioContextClass()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
+    const masterGain = audioContext.createGain()
+    const now = audioContext.currentTime
 
-    oscillator.type = 'sine'
-    oscillator.frequency.setValueAtTime(1046.5, audioContext.currentTime)
-    oscillator.frequency.exponentialRampToValueAtTime(
-      1318.5,
-      audioContext.currentTime + 0.14,
-    )
+    masterGain.gain.setValueAtTime(0.0001, now)
+    masterGain.gain.exponentialRampToValueAtTime(0.08, now + 0.012)
+    masterGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.7)
+    masterGain.connect(audioContext.destination)
 
-    gainNode.gain.setValueAtTime(0.0001, audioContext.currentTime)
-    gainNode.gain.exponentialRampToValueAtTime(0.12, audioContext.currentTime + 0.01)
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.32)
+    const toneOne = audioContext.createOscillator()
+    const toneTwo = audioContext.createOscillator()
 
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    toneOne.type = 'sine'
+    toneTwo.type = 'triangle'
 
-    oscillator.start(audioContext.currentTime)
-    oscillator.stop(audioContext.currentTime + 0.34)
+    toneOne.frequency.setValueAtTime(1318.5, now)
+    toneOne.frequency.exponentialRampToValueAtTime(1567.98, now + 0.18)
 
-    oscillator.onended = () => {
+    toneTwo.frequency.setValueAtTime(1760, now + 0.06)
+    toneTwo.frequency.exponentialRampToValueAtTime(2093, now + 0.24)
+
+    toneOne.connect(masterGain)
+    toneTwo.connect(masterGain)
+
+    toneOne.start(now)
+    toneTwo.start(now + 0.045)
+    toneOne.stop(now + 0.34)
+    toneTwo.stop(now + 0.4)
+
+    toneTwo.onended = () => {
       audioContext.close().catch(() => {})
     }
   }
@@ -563,19 +485,6 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
-  }
-
-  const showToast = (message) => {
-    setToastMessage(message)
-
-    if (toastTimerRef.current) {
-      window.clearTimeout(toastTimerRef.current)
-    }
-
-    toastTimerRef.current = window.setTimeout(() => {
-      setToastMessage('')
-      toastTimerRef.current = null
-    }, 2200)
   }
 
   const resetAll = () => {
@@ -676,7 +585,6 @@ function App() {
       }
       setScreen('summary')
       playDing()
-      showToast('All family orders saved.')
       scrollToTop()
       return
     }
@@ -684,26 +592,16 @@ function App() {
     const nextMember = findNextIncompleteMember(currentMember)
     setCurrentMember(nextMember)
     playDing()
-    showToast(`${currentMember} saved. Next up: ${nextMember}.`)
     scrollToTop()
   }
 
   const viewOrderScreen = () => {
     setScreen('summary')
-    showToast('Viewing current order.')
     scrollToTop()
   }
 
   return (
     <div className="persona-shell">
-      {toastMessage && (
-        <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
-          <div className="stage-enter border border-[#ffd2ea]/30 bg-[#ff2e97] px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-white shadow-[0_18px_40px_rgba(255,46,151,0.35)]">
-            {toastMessage}
-          </div>
-        </div>
-      )}
-
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-20 top-14 h-44 w-44 rotate-12 rounded-[2.5rem] bg-[#ff4aa7]/20 blur-3xl" />
         <div className="absolute right-0 top-0 h-72 w-72 -translate-y-1/3 translate-x-1/4 rounded-full bg-[#ff8aca]/18 blur-3xl" />
@@ -1038,17 +936,10 @@ function App() {
             <div className="persona-panel px-6 py-8 md:px-8 md:py-8">
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#ffb7dd]">
-                    Mom&apos;s View
-                  </p>
                   <h2 className="mt-2 font-display text-4xl uppercase tracking-[0.1em] text-white md:text-5xl">
                     Final Meal Summary
                   </h2>
                   <p className="mt-2 text-sm font-medium text-white/60 md:text-base">{todayLabel}</p>
-                  <p className="mt-3 max-w-2xl text-sm text-white/72 md:text-base">
-                    Everyone has locked in breakfast and dinner. This is the clean
-                    morning recap screen for the household.
-                  </p>
                 </div>
 
                 <button type="button" className="persona-button" onClick={resetAll}>
@@ -1116,8 +1007,7 @@ function App() {
               })}
             </div>
 
-            <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-              <div className="persona-panel px-6 py-6 md:px-8">
+            <div className="persona-panel px-6 py-6 md:px-8">
                 <div className="mb-5 flex items-end justify-between gap-4">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.36em] text-[#ffb7dd]">
@@ -1197,17 +1087,6 @@ function App() {
                     here automatically.
                   </p>
                 )}
-              </div>
-
-              <div className="grid gap-5">
-                {FAMILY_MEMBERS.map((member) => (
-                  <RepeatWatchCard
-                    key={`repeat-${member}`}
-                    member={member}
-                    notes={buildRepeatNotes(member)}
-                  />
-                ))}
-              </div>
             </div>
           </section>
         )}
