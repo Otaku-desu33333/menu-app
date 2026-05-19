@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel', 'Frank', 'Sally']
 const HISTORY_STORAGE_KEY = 'family-meal-menu-history-v1'
+const SESSION_STORAGE_KEY = 'family-meal-menu-session-v1'
 const MAX_HISTORY_ITEMS = 24
 const TOPPING_OPTIONS = [
   { id: 'fresh-cream', label: 'Fresh Cream', chinese: '鲜奶油' },
@@ -253,6 +254,45 @@ const persistOrderHistory = (history) => {
   window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
 }
 
+const loadSessionState = () => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  try {
+    const rawSession = window.localStorage.getItem(SESSION_STORAGE_KEY)
+
+    if (!rawSession) {
+      return null
+    }
+
+    const parsedSession = JSON.parse(rawSession)
+    const validScreen = ['intro', 'select', 'summary'].includes(parsedSession?.screen)
+      ? parsedSession.screen
+      : 'intro'
+    const validCurrentMember = FAMILY_MEMBERS.includes(parsedSession?.currentMember)
+      ? parsedSession.currentMember
+      : FAMILY_MEMBERS[0]
+
+    return {
+      screen: validScreen,
+      currentMember: validCurrentMember,
+      selections: normalizeSelections(parsedSession?.selections),
+      hasArchivedCurrentMenu: Boolean(parsedSession?.hasArchivedCurrentMenu),
+    }
+  } catch {
+    return null
+  }
+}
+
+const persistSessionState = (sessionState) => {
+  if (typeof window === 'undefined') {
+    return
+  }
+
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessionState))
+}
+
 function ChoiceCard({ title, description, selected, onClick }) {
   return (
     <button
@@ -322,11 +362,26 @@ function SummaryRow({ label, value }) {
 }
 
 function App() {
-  const [screen, setScreen] = useState('intro')
-  const [currentMember, setCurrentMember] = useState(FAMILY_MEMBERS[0])
-  const [selections, setSelections] = useState(createEmptySelections)
+  const [initialSessionState] = useState(
+    () =>
+      loadSessionState() ?? {
+        screen: 'intro',
+        currentMember: FAMILY_MEMBERS[0],
+        selections: createEmptySelections(),
+        hasArchivedCurrentMenu: false,
+      },
+  )
+  const [screen, setScreen] = useState(initialSessionState.screen)
+  const [currentMember, setCurrentMember] = useState(
+    initialSessionState.currentMember,
+  )
+  const [selections, setSelections] = useState(
+    initialSessionState.selections,
+  )
   const [orderHistory, setOrderHistory] = useState(loadOrderHistory)
-  const [hasArchivedCurrentMenu, setHasArchivedCurrentMenu] = useState(false)
+  const [hasArchivedCurrentMenu, setHasArchivedCurrentMenu] = useState(
+    initialSessionState.hasArchivedCurrentMenu,
+  )
   const dingAudioRef = useRef(null)
 
   const currentSelection = selections[currentMember]
@@ -564,6 +619,15 @@ function App() {
     setScreen('summary')
     scrollToTop()
   }
+
+  useEffect(() => {
+    persistSessionState({
+      screen,
+      currentMember,
+      selections,
+      hasArchivedCurrentMenu,
+    })
+  }, [screen, currentMember, selections, hasArchivedCurrentMenu])
 
   return (
     <div className="persona-shell">
