@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 
-const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel']
+const FAMILY_MEMBERS = ['Ryan', 'Russell', 'Robin', 'Rachel', 'Frank', 'Sally']
 const HISTORY_STORAGE_KEY = 'family-meal-menu-history-v1'
 const MAX_HISTORY_ITEMS = 24
 const TOPPING_OPTIONS = [
